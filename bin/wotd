@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+$:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+require 'wotd'
+
+subs = %w{showerthoughts worldnews todayilearned lifeprotips}
+subr = subs.sample
+
+puts "r/#{subr}: #{Wotd.get(subr)}"
