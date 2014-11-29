@@ -5,7 +5,6 @@ require "wotd/version"
 module Wotd
   class Wotd
     DAY_IN_SECONDS = 86_4000
-    MONTH_IN_SECONDS = 2_688_000
 
     attr_accessor :subreddit
 
@@ -14,12 +13,12 @@ module Wotd
     end
 
     def update
-      top = reddit.top
+      top = reddit.articles('top', querystring: 'sort=top&t=day')
       top.each do |article|
         key = "reddit:#{subreddit}:#{article.id}"
         unless redis.exists(key)
           redis.set(key, article.title)
-          redis.expire(key, MONTH_IN_SECONDS)
+          redis.expire(key, DAY_IN_SECONDS)
         end
       end
     end
@@ -32,8 +31,10 @@ module Wotd
 
     def get
       # update first, before picking
-      update unless backoff?
-      backoff(DAY_IN_SECONDS)
+      unless hit?
+        update
+        backoff(DAY_IN_SECONDS)
+      end
 
       pick = redis.keys("reddit:#{subreddit}:*").sample
       redis.get(pick)
@@ -44,7 +45,7 @@ module Wotd
       redis.expire("wotd:#{subreddit}", seconds)
     end
 
-    def backoff?
+    def hit?
       !!redis.get("wotd:#{subreddit}")
     end
 
