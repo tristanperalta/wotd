@@ -41,12 +41,12 @@ module Wotd
     end
 
     def backoff(seconds)
-      redis.set("wotd:#{subreddit}", 1)
-      redis.expire("wotd:#{subreddit}", seconds)
+      redis.set("reddit:backoff:#{subreddit}", 1)
+      redis.expire("reddit:backoff:#{subreddit}", seconds)
     end
 
     def hit?
-      !!redis.get("wotd:#{subreddit}")
+      !!redis.get("reddit:backoff:#{subreddit}")
     end
 
     private
