@@ -30,19 +30,26 @@ module Wotd
     end
 
     def get
-      # update first, before picking
-      unless hit?
-        update
-        backoff(DAY_IN_SECONDS)
-      end
-
       pick = redis.keys("reddit:#{subreddit}:*").sample
       redis.get(pick)
+    end
+
+    def get!
+      hit!
+      get
     end
 
     def backoff(seconds)
       redis.set("reddit:backoff:#{subreddit}", 1)
       redis.expire("reddit:backoff:#{subreddit}", seconds)
+    end
+
+    def hit!
+      # update first, before picking
+      unless hit?
+        update
+        backoff(DAY_IN_SECONDS)
+      end
     end
 
     def hit?
@@ -66,5 +73,9 @@ module Wotd
 
   def self.get(subreddit)
     Wotd.new(subreddit).get
+  end
+
+  def self.hit!(subreddit)
+    Wotd.new(subreddit).hit!
   end
 end

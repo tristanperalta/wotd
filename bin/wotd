@@ -6,4 +6,10 @@ require 'wotd'
 subs = %w{showerthoughts worldnews todayilearned lifeprotips}
 subr = subs.sample
 
-puts "r/#{subr}: #{Wotd.get(subr)}"
+wotd = Wotd::Wotd.new(subr)
+
+threads = []
+threads << Thread.new { puts "r/#{wotd.subreddit}: #{wotd.get}" }
+threads << Thread.new { wotd.hit! }
+
+threads.each { |thr| thr.join }
