@@ -1,15 +1,25 @@
 #!/usr/bin/env ruby
 
 $:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+require 'optparse'
 require 'wotd'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = 'Usage: wotd'
+
+  opts.on('--update-only') do |u|
+    options[:update_only] = u
+  end
+end.parse!
 
 subs = %w{showerthoughts worldnews todayilearned lifeprotips}
 subr = subs.sample
 
 wotd = Wotd::Wotd.new(subr)
 
-threads = []
-threads << Thread.new { puts "r/#{wotd.subreddit}: #{wotd.get}" }
-threads << Thread.new { wotd.hit! }
-
-threads.each { |thr| thr.join }
+if options[:update_only]
+  subs.map{|s| Wotd.hit!(s)}
+else
+  puts "r/#{wotd.subreddit}: #{wotd.get}"
+end
