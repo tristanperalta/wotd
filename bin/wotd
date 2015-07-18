@@ -4,22 +4,37 @@ $:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
 require 'optparse'
 require 'wotd'
 
-options = {}
-OptionParser.new do |opts|
-  opts.banner = 'Usage: wotd'
-
-  opts.on('--update-only') do |u|
-    options[:update_only] = u
-  end
-end.parse!
-
 subs = %w{showerthoughts worldnews todayilearned lifeprotips}
 subr = subs.sample
 
 wotd = Wotd::Wotd.new(subr)
 
-if options[:update_only]
-  subs.map{|s| Wotd.hit!(s)}
-else
-  puts "r/#{wotd.subreddit}: #{wotd.get}"
+opts_parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: wotd'
+
+  opts.on('-u', '--update-only', 'Updates all default subs') do |u|
+    subs.map{ |s| Wotd.hit!(s) }
+  end
+
+  opts.on('-s', '--show', 'Show message from reddit') do |s|
+    puts "r/#{wotd.subreddit}: #{wotd.get}"
+  end
+
+  opts.on('--purge-all') do |p|
+    subs.map do |s|
+      wotd = Wotd::Wotd.new(s)
+      wotd.purge
+    end
+  end
+
+  opts.on('-v', '--version', 'Show version') do |v|
+    puts Wotd::VERSION
+  end
+
+  opts.on('-h', '--help', 'Prints this help') do
+    puts opts
+    exit
+  end
 end
+
+opts_parser.parse!
