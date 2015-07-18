@@ -12,17 +12,20 @@ wotd = Wotd::Wotd.new(subr)
 opts_parser = OptionParser.new do |opts|
   opts.banner = 'Usage: wotd'
 
-  opts.on('-u', '--update-only', 'Updates all default subs') do |u|
-    subs.map{ |s| Wotd.hit!(s) }
-  end
-
   opts.on('-s', '--show', 'Show message from reddit') do |s|
     puts "r/#{wotd.subreddit}: #{wotd.get}"
   end
 
+  opts.on('-u', '--update-only', 'Updates all default subs') do |u|
+    subs.map do |sub|
+      wotd = Wotd::Wotd.new(sub)
+      wotd.hit!
+    end
+  end
+
   opts.on('--purge-all') do |p|
-    subs.map do |s|
-      wotd = Wotd::Wotd.new(s)
+    subs.map do |sub|
+      wotd = Wotd::Wotd.new(sub)
       wotd.purge
     end
   end

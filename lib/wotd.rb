@@ -27,6 +27,10 @@ module Wotd
       redis.keys("reddit:#{subreddit}:*").each do |r|
         redis.del(r)
       end
+
+      redis.keys("reddit:backoff:*").each do |r|
+        redis.del(r)
+      end
     end
 
     def get
