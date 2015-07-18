@@ -8,7 +8,7 @@ options = {}
 opts_parser = OptionParser.new do |opts|
   opts.banner = 'Usage: wotd'
 
-  opts.on('-s', '--show', 'Show message from reddit') do |s|
+  opts.on('-s [SUBREDDIT]', '--show [SUBREDDIT]', 'Show message from reddit') do |s|
     options[:show] = s
   end
 

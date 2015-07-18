@@ -11,7 +11,7 @@ module Wotd
     def run!
       case
       when options[:show]
-        show
+        show(options[:show])
       when options[:purge_all]
         purge_all
       when options[:update_only]
@@ -35,7 +35,11 @@ module Wotd
     def show(subreddit=nil)
       subreddit ||= DEFAULT_SUBREDDIT.sample
       wotd = Wotd.new(subreddit)
-      puts "r/#{wotd.subreddit}: #{wotd.get}"
+
+      get_method = "get"
+      get_method += "!" if not DEFAULT_SUBREDDIT.include?(subreddit)
+
+      puts "r/#{wotd.subreddit}: #{wotd.send(get_method)}"
     end
 
     def update_only
