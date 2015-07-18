@@ -1,6 +1,7 @@
 require 'redis'
 require 'reddit'
-require "wotd/version"
+require 'wotd/version'
+require 'wotd/command_line'
 
 module Wotd
   class Wotd
@@ -69,17 +70,5 @@ module Wotd
     def redis
       Redis.new
     end
-  end
-
-  def self.update(subreddit)
-    Wotd.new(subreddit).update
-  end
-
-  def self.get(subreddit)
-    Wotd.new(subreddit).get
-  end
-
-  def self.hit!(subreddit)
-    Wotd.new(subreddit).hit!
   end
 end
