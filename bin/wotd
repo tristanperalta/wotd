@@ -7,12 +7,11 @@ require 'wotd'
 subs = %w{showerthoughts worldnews todayilearned lifeprotips}
 subr = subs.sample
 
-wotd = Wotd::Wotd.new(subr)
-
 opts_parser = OptionParser.new do |opts|
   opts.banner = 'Usage: wotd'
 
   opts.on('-s', '--show', 'Show message from reddit') do |s|
+    wotd = Wotd::Wotd.new(subr)
     puts "r/#{wotd.subreddit}: #{wotd.get}"
   end
 
